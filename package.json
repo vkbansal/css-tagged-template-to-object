@@ -1,0 +1,30 @@
+{
+  "name": "babel-plugin-transform-css-tagged-template-to-object",
+  "version": "0.1.0",
+  "description": "Babel Plugin to convert css tagged literals to javascript objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "babel-plugin",
+    "css-in-js",
+    "glamor"
+  ],
+  "author": "Vivek Kumar Bansal <contact@vkbansal.me>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-jest": "^20.0.3",
+    "babel-preset-env": "^1.5.1",
+    "jest": "^20.0.3",
+    "postcss": "^6.0.1"
+  },
+  "peerDependencies": {
+    "babel-core": "^6.24.1",
+    "postcss": "^6.0.1"
+  },
+  "dependencies": {
+    "lodash.camelcase": "^4.3.0"
+  }
+}
