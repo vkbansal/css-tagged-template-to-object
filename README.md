@@ -19,3 +19,20 @@ export const $switch = css({
     alignItems: 'flex-end'
 });
 ```
+
+## Install
+
+Use npm
+```
+npm install -S babel-plugin-transform-css-tagged-template-to-object
+```
+
+Add the following to your `.babelrc`
+```
+{
+    "plugins": [
+        "transform-css-tagged-template-to-object"
+    ]
+}
+```
+
