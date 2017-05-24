@@ -1,5 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`css-tag-literal media-queries 1`] = `
+"import { css } from 'glamor';
+
+import { $screenWidthMin } from 'styles/variables';
+
+export const myStyles = css({
+    fontSize: '2.5rem',
+    [\`@media (min-width: \${$screenWidthMin})\`]: {
+        fontSize: '1.75rem'
+    }
+});
+
+export const myStyles2 = css({
+    fontSize: '2.5rem',
+    '@media (min-width: 768px)': {
+        fontSize: '1.75rem'
+    }
+});"
+`;
+
 exports[`css-tag-literal transforms css tag literals into JS objects 1`] = `
 "import { css } from 'glamor';
 
