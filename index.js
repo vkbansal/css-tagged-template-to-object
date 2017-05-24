@@ -35,6 +35,13 @@ function cssToJSObjectStr(nodes) {
                 }
 
                 return `${selectoutput}: ${cssToJSObjectStr(node.nodes)}`;
+            case 'atrule':
+                let { name, params } = node;
+                let mediaQuery = params.indexOf(DVS) > -1
+                                    ? `[\`@${name} ${params.replace(DVS, '${').replace(DVE, '}')}\`]`
+                                    : `'@${name} ${params}'`;
+
+                return `${mediaQuery}: ${cssToJSObjectStr(node.nodes)}`;
             default:
                 throw new Error('Invalid CSS node');
         }
