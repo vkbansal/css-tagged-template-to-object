@@ -9,30 +9,20 @@ function cssToJSObjectStr(nodes) {
         switch (node.type) {
             case 'decl':
                 let { prop, value } = node;
-                let output = camelCase(prop);
-
-                output += ': ';
+                let output = `${camelCase(prop)}: `;
 
                 if (value.indexOf(DVS) > -1) {
-                    output += '`';
-                    output += value.replace(DVS, '${').replace(DVE, '}');
-                    output += '`';
+                    output += `\`${value.replace(DVS, '${').replace(DVE, '}')}\``;
                 } else {
-                    output += ("'" + value + "'");
+                    output += `'${value}'`;
                 }
 
                 return output;
             case 'rule':
                 let { selector } = node;
-                let selectoutput = '';
-
-                if (selector.indexOf(DVS) > -1) {
-                    selectoutput += '[`';
-                    selectoutput += selector.replace(DVS, '${').replace(DVE, '}');
-                    selectoutput += '`]';
-                } else {
-                    selectoutput += ("'" + selector + "'");
-                }
+                let selectoutput = selector.indexOf(DVS) > -1
+                                    ? `[\`${selector.replace(DVS, '${').replace(DVE, '}')}\`]`
+                                    : `'${selector}'`;
 
                 return `${selectoutput}: ${cssToJSObjectStr(node.nodes)}`;
             case 'atrule':
@@ -43,9 +33,9 @@ function cssToJSObjectStr(nodes) {
 
                 return `${mediaQuery}: ${cssToJSObjectStr(node.nodes)}`;
             default:
-                throw new Error('Invalid CSS node');
+                throw new Error(`Invalid CSS node ${node.type}`);
         }
-    }).join(',\n') + '\n}';
+    }).join(',') + '\n}';
 }
 
 module.exports = function (babel) {
