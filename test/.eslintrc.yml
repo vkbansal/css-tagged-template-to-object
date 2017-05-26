@@ -1,0 +1,4 @@
+rules:
+    import/no-nodejs-modules: 0
+env:
+    jest: true

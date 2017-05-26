@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+
 import { transform } from 'babel-core';
 import camelCase from 'lodash.camelcase';
 
@@ -10,7 +11,7 @@ const fixtures = fs.readdirSync(fixturesPath, 'utf8').reduce((p, file) => {
     const data = fs.readFileSync(path.resolve(fixturesPath, file), 'utf8');
     return Object.assign(p, {
         [camelCase(path.basename(file, '.js'))]: data
-    })
+    });
 }, {});
 
 describe('css-tag-literal', () => {

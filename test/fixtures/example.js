@@ -1,5 +1,4 @@
 import { css } from 'glamor';
-
 import { $dangerColor, $colorTextLight, $successColor } from 'styles/variables';
 
 const $switchHeight = 28;
@@ -79,5 +78,4 @@ export const $input = css`
     :checked + .${$label}::after: {
         transform: translateX(${$switchWidth - $buttonWidth - (2 * $delta)}px)
     }
-`
-;
+`;
