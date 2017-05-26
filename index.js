@@ -10,7 +10,8 @@ function buildValueAst(t, value, expressions) {
         return t.stringLiteral(value);
     }
 
-    const quasis = value.split(DYNAMIC_EXPRESSION).map(e => t.templateElement(e));
+    const quasis = value.split(DYNAMIC_EXPRESSION)
+                        .map((e, i, a) => t.templateElement({ raw: e, cooked: e }, a.length - 1 === i));
     const exprs = matches.map((match) => {
         let [, index] = (/__DYNAMIC__EXPRESSION__(\d+)__/g).exec(match);
         index = parseInt(index, 10);
@@ -33,17 +34,22 @@ function buildObjectAst(t, nodes, expressions) {
                 );
             case 'rule':
                 let { selector } = node;
+                const isSelectorComputed = DYNAMIC_EXPRESSION.test(selector);
 
                 return t.objectProperty(
-                    buildValueAst(t, selector, expressions),
-                    buildObjectAst(t, node.nodes, expressions)
+                    isSelectorComputed ? buildValueAst(t, selector, expressions) : t.stringLiteral(selector),
+                    buildObjectAst(t, node.nodes, expressions),
+                    isSelectorComputed
                 );
             case 'atrule':
                 let { name, params } = node;
+                const rule = `@${name} ${params}`;
+                const isRuleComputed = DYNAMIC_EXPRESSION.test(rule);
 
                 return t.objectProperty(
-                    buildValueAst(t, `@${name} ${params}`, expressions),
-                    buildObjectAst(t, node.nodes, expressions)
+                    isRuleComputed ? buildValueAst(t, rule, expressions) : t.stringLiteral(rule),
+                    buildObjectAst(t, node.nodes, expressions),
+                    isRuleComputed
                 );
             default:
                 throw new Error(`Invalid CSS node ${node.type}`);
