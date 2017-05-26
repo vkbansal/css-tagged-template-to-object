@@ -1,0 +1,8 @@
+---
+parser: babel-eslint
+extends:
+    - vkbansal
+rules:
+    no-case-declarations: 0
+    import/no-commonjs: 0
+    no-param-reassign: 0

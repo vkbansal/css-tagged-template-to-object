@@ -4,6 +4,7 @@
   "description": "Babel Plugin to convert css tagged literals to javascript objects",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js",
     "test": "jest"
   },
   "keywords": [
@@ -15,8 +16,12 @@
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.24.1",
+    "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",
     "babel-preset-env": "^1.5.1",
+    "eslint": "^3.19.0",
+    "eslint-config-vkbansal": "^5.2.1",
+    "eslint-plugin-import": "^2.3.0",
     "jest": "^20.0.3",
     "postcss": "^6.0.1"
   },
