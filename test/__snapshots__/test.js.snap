@@ -22,7 +22,6 @@ export const myStyles2 = css({
 
 exports[`css-tag-literal transforms css tag literals into JS objects 1`] = `
 "import { css } from 'glamor';
-
 import { $dangerColor, $colorTextLight, $successColor } from 'styles/variables';
 
 const $switchHeight = 28;
