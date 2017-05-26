@@ -1,49 +1,64 @@
 const postcss = require('postcss');
 const camelCase = require('lodash.camelcase');
 
-const DVS = '__DYNAMIC_VAR_START__';
-const DVE = '__DYNAMIC_VAR_END__';
+const DYNAMIC_EXPRESSION = /__DYNAMIC__EXPRESSION__\d+__/g;
 
-function cssToJSObjectStr(nodes) {
-    return '{\n' + nodes.map(function(node) {
+function buildValueAst(t, value, expressions) {
+    let matches = value.match(DYNAMIC_EXPRESSION) || [];
+
+    if (!matches.length) {
+        return t.stringLiteral(value);
+    }
+
+    const quasis = value.split(DYNAMIC_EXPRESSION).map(e => t.templateElement(e));
+    const exprs = matches.map((match) => {
+        let [, index] = (/__DYNAMIC__EXPRESSION__(\d+)__/g).exec(match);
+        index = parseInt(index, 10);
+
+        return expressions[index];
+    });
+
+    return t.templateLiteral(quasis, exprs);
+}
+
+function buildObjectAst(t, nodes, expressions) {
+    const properties = nodes.map((node) => {
         switch (node.type) {
             case 'decl':
                 let { prop, value } = node;
-                let output = `${camelCase(prop)}: `;
 
-                if (value.indexOf(DVS) > -1) {
-                    output += `\`${value.replace(DVS, '${').replace(DVE, '}')}\``;
-                } else {
-                    output += `'${value}'`;
-                }
-
-                return output;
+                return t.objectProperty(
+                    t.identifier(camelCase(prop)),
+                    buildValueAst(t, value, expressions)
+                );
             case 'rule':
                 let { selector } = node;
-                let selectoutput = selector.indexOf(DVS) > -1
-                                    ? `[\`${selector.replace(DVS, '${').replace(DVE, '}')}\`]`
-                                    : `'${selector}'`;
 
-                return `${selectoutput}: ${cssToJSObjectStr(node.nodes)}`;
+                return t.objectProperty(
+                    buildValueAst(t, selector, expressions),
+                    buildObjectAst(t, node.nodes, expressions)
+                );
             case 'atrule':
                 let { name, params } = node;
-                let mediaQuery = params.indexOf(DVS) > -1
-                                    ? `[\`@${name} ${params.replace(DVS, '${').replace(DVE, '}')}\`]`
-                                    : `'@${name} ${params}'`;
 
-                return `${mediaQuery}: ${cssToJSObjectStr(node.nodes)}`;
+                return t.objectProperty(
+                    buildValueAst(t, `@${name} ${params}`, expressions),
+                    buildObjectAst(t, node.nodes, expressions)
+                );
             default:
                 throw new Error(`Invalid CSS node ${node.type}`);
         }
-    }).join(',') + '\n}';
+    });
+
+    return t.objectExpression(properties);
 }
 
-module.exports = function (babel) {
+module.exports = function cssTaggedLiteralsToJs(babel) {
     const t = babel.types;
 
     return {
         visitor: {
-            TaggedTemplateExpression(path, { opts, file }) {
+            TaggedTemplateExpression(path, { opts }) {
                 const { tagName = 'css' } = opts;
                 const node = path.node;
 
@@ -51,28 +66,30 @@ module.exports = function (babel) {
                     return;
                 }
 
-
-                let nodes = '';
-                const expressions = node.quasi.expressions;
-
-                node.quasi.quasis.forEach(function(elem, i) {
-                    if (elem.value.cooked) {
-                        nodes += elem.value.cooked;
+                const nodeQuasis = node.quasi.quasis;
+                const nodeExpressions = node.quasi.expressions || [];
+                const cssExpr = nodeQuasis.reduce((acc, quasi, i) => {
+                    if (quasi.value.cooked) {
+                        acc += quasi.value.cooked;
                     }
 
-                    if (i < expressions.length) {
-                        const expr = expressions[i];
-                        nodes += DVS;
-                        nodes += file.code.substring(expr.start, expr.end);
-                        nodes += DVE;
+                    if (nodeExpressions[i]) {
+                        acc += `__DYNAMIC__EXPRESSION__${i}__`;
                     }
-                });
 
-                const cssAst = postcss.parse(nodes);
+                    return acc;
+                }, '');
 
-                let cssStr = cssToJSObjectStr(cssAst.nodes);
+                const cssAst = postcss.parse(cssExpr);
 
-                path.replaceWithSourceString(`${tagName}(${cssStr})`);
+                const cssObjectAst = buildObjectAst(t, cssAst.nodes, nodeExpressions);
+
+                path.replaceWith(
+                    t.callExpression(
+                        t.identifier(tagName),
+                        [cssObjectAst]
+                    )
+                );
             }
         }
     };
