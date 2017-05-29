@@ -49,8 +49,8 @@ Add the following to your `.babelrc` or `package.json`. Whichever you prefer.
 [npm-url]: https://npmjs.org/package/babel-plugin-transform-css-tagged-template-to-object
 [npm-image]: http://img.shields.io/npm/v/babel-plugin-transform-css-tagged-template-to-object.svg?style=flat-square
 
-[travis-url]: https://travis-ci.org/vkbansal/babel-plugin-transform-css-tagged-template-to-object
-[travis-image]: http://img.shields.io/travis/vkbansal/babel-plugin-transform-css-tagged-template-to-object/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/vkbansal/css-tagged-template-to-object
+[travis-image]: http://img.shields.io/travis/vkbansal/css-tagged-template-to-object/master.svg?style=flat-square
 
 [deps-url]: https://david-dm.org/vkbansal/babel-plugin-transform-css-tagged-template-to-object
 [deps-image]: https://img.shields.io/david/vkbansal/babel-plugin-transform-css-tagged-template-to-object.svg?style=flat-square
